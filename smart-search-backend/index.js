@@ -167,7 +167,7 @@ app.get("/search", async (req, res) => {
     }
 
     // Apply minScore filter (default 0.75)
-    const threshold = minScore ? parseFloat(minScore) : 0.90;
+    const threshold = minScore ? parseFloat(minScore) : 0.80;
     matches = matches.filter((m) => m.score >= threshold);
     console.log("🔍 Matches:", matches.map(m => ({ id: m.id, score: m.score })));
 

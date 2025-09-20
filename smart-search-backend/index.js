@@ -155,7 +155,7 @@ app.get("/search", async (req, res) => {
 
     const results = await index.query({
       vector: Array.from(embedding),
-      topK: 10,
+      topK: 5,
       includeMetadata: true,
     });
 
@@ -167,7 +167,7 @@ app.get("/search", async (req, res) => {
     }
 
     // Apply minScore filter (default 0.75)
-    const threshold = minScore ? parseFloat(minScore) : 0.75;
+    const threshold = minScore ? parseFloat(minScore) : 0.90;
     matches = matches.filter((m) => m.score >= threshold);
 
     res.json(matches);

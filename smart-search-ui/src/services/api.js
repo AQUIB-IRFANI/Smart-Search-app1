@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE = "http://localhost:4000";
+const API_BASE = "https://smart-search-app1.onrender.com";
 
 // 🔍 Search endpoint
 export async function searchEntries(q, type) {

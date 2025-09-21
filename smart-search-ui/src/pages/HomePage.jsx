@@ -63,6 +63,7 @@ function HomePage() {
             <option value="">All</option>
             <option value="products">Products</option>
             <option value="blogs">Blogs</option>
+            <option value="events">Events</option>
           </select>
         </div>
       </div>

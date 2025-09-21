@@ -82,7 +82,6 @@ app.get("/item/:id", async (req, res) => {
 
 // --- Webhook endpoint ---
 app.post("/webhook", async (req, res) => {
-  console.log("📩 Webhook hit with body:", JSON.stringify(req.body, null, 2));
   try {
     console.log("✅ Webhook received!");
     const { data } = req.body;
@@ -94,33 +93,50 @@ app.post("/webhook", async (req, res) => {
     const entry = data.entry;
     const contentType = data.content_type?.uid;
 
-    // Put ALL entry fields into metadata
-    const metadata = {
-      content_type: contentType,
-      ...entry,
-      url: `https://app.contentstack.com/#!/stack/${process.env.CONTENTSTACK_API_KEY}/entry/${entry.uid}`,
-    };
+    // Build metadata depending on content type
+    let metadata = { content_type: contentType, title: entry.title, tags: entry.tags || [] };
 
-    // Clean image fields automatically
-    Object.keys(metadata).forEach((key) => {
-      if (typeof metadata[key] === "string" && metadata[key].includes("<img")) {
-        metadata[key] = cleanImageField(metadata[key]);
-      }
-    });
 
-    // Format dates if they look like ISO
-    Object.keys(metadata).forEach((key) => {
-      if (/\d{4}-\d{2}-\d{2}T/.test(metadata[key])) {
-        metadata[key] = cleanDate(metadata[key]);
-      }
-    });
+    if (contentType === "products") {
+      metadata = {
+        ...metadata,
+        url: `https://app.contentstack.com/#!/stack/${process.env.CONTENTSTACK_API_KEY}/entry/${entry.uid}`, // Contentstack entry link
+        description: entry.description,
+        price: entry.price,
+        product_image: cleanImageField(entry.product_image),
+        category: entry.category,
+      };
+    } else if (contentType === "blogs") {
+      metadata = {
+        ...metadata,
+        url: `https://app.contentstack.com/#!/stack/${process.env.CONTENTSTACK_API_KEY}/entry/${entry.uid}`, // Contentstack entry link 
+        body: entry.body || "",
+        author: entry.author || "",
+        publish_date: cleanDate(entry.publish_date),
+        image: cleanImageField(entry.image),
+      };
+    } else if (contentType === "events") {
+      metadata = {
+        ...metadata,
+        url: `https://app.contentstack.com/#!/stack/${process.env.CONTENTSTACK_API_KEY}/entry/${entry.uid}`,
+        description: entry.description || "",
+        location: entry.location || "",
+        start_date: cleanDate(entry.start_date),
+        end_date: cleanDate(entry.end_date),
+        image: cleanImageField(entry.image),
+      };
+    }
 
-    // Build textToEmbed by concatenating all string fields
-    let textToEmbed = Object.values(entry)
-      .filter((val) => typeof val === "string")
-      .join(" ");
+    // Text to embed
+    let textToEmbed = `${entry.title} ${(entry.tags || []).join(" ")}`;
 
-    // Generate embeddings
+    if (contentType === "products") {
+      textToEmbed = `${entry.title} ${entry.description} ${(entry.tags || []).join(" ")}`;
+    } else if (contentType === "blogs") {
+      textToEmbed = `${entry.title} ${entry.body} ${(entry.tags || []).join(" ")}`;
+    } else if (contentType === "events") {
+      textToEmbed = `${entry.title} ${entry.description} ${entry.location} ${entry.start_date} ${entry.end_date} ${(entry.tags || []).join(" ")}`;
+    }
     const embedding = await embedText(textToEmbed);
 
     await index.upsert([

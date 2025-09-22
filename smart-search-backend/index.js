@@ -136,7 +136,7 @@ app.get("/item/:id", async (req, res) => {
       topK: 1,
       includeMetadata: true,
       includeValues: false,
-      namespace: "__default__",
+
     });
 
     console.log("🔍 Pinecone query response:", JSON.stringify(results, null, 2));

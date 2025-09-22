@@ -131,24 +131,30 @@ app.get("/item/:id", async (req, res) => {
   try {
     const id = req.params.id;
 
+    // Explicitly set namespace "__default__"
     const response = await index.fetch({
       ids: [id],
-      namespace: process.env.PINECONE_NAMESPACE || "__default__",
+      namespace: "__default__",
     });
-
-    console.log("🔍 Pinecone fetch response:", JSON.stringify(response, null, 2));
+    console.log("🔍 Pinecone fetch raw response:", response);
+    console.log("🔍 Raw Pinecone fetch response:", JSON.stringify(response, null, 2));
 
     if (!response || !response.vectors || !response.vectors[id]) {
       return res.status(404).json({ error: "Item not found in Pinecone" });
     }
 
-    const item = { id, ...response.vectors[id].metadata };
+    const item = {
+      id,
+      ...response.vectors[id].metadata,
+    };
+
     res.json(item);
   } catch (err) {
     console.error("❌ Item fetch error:", err.message || err);
     res.status(500).json({ error: "An internal server error occurred" });
   }
 });
+
 
 
 // --- Search endpoint ---

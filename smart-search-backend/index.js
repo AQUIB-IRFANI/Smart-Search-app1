@@ -132,7 +132,7 @@ app.get("/item/:id", async (req, res) => {
     const id = req.params.id;
 
     // Explicitly set namespace "__default__"
-    const response = await index.fetch({
+    const response = await index.query({
       ids: [id],
       namespace: "__default__",
     });

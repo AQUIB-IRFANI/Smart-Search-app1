@@ -131,29 +131,34 @@ app.get("/item/:id", async (req, res) => {
   try {
     const id = req.params.id;
 
-    // Explicitly set namespace "__default__"
-    const response = await index.query({
-      ids: [id],
+    const results = await index.query({
+      id: id, // query by vector ID
+      topK: 1,
+      includeMetadata: true,
+      includeValues: false,
       namespace: "__default__",
     });
-    console.log("🔍 Pinecone fetch raw response:", response);
-    console.log("🔍 Raw Pinecone fetch response:", JSON.stringify(response, null, 2));
 
-    if (!response || !response.vectors || !response.vectors[id]) {
+    console.log("🔍 Pinecone query response:", JSON.stringify(results, null, 2));
+
+    if (!results.matches || results.matches.length === 0) {
       return res.status(404).json({ error: "Item not found in Pinecone" });
     }
 
+    const match = results.matches[0];
+
     const item = {
-      id,
-      ...response.vectors[id].metadata,
+      id: match.id,
+      ...match.metadata,
     };
 
     res.json(item);
   } catch (err) {
-    console.error("❌ Item fetch error:", err.message || err);
-    res.status(500).json({ error: "An internal server error occurred" });
+    console.error("❌ Item fetch error:", err);
+    res.status(500).json({ error: err.message || "Internal server error" });
   }
 });
+
 
 
 

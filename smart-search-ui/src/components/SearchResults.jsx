@@ -71,11 +71,11 @@ function SearchResults({ results }) {
                 </div>
               )}
 
-              {/* <div className="mt-3">
+              <div className="mt-3">
                 <Link to={`/detail/${item.id}`} className="btn btn-primary">
                   Read More →
                 </Link>
-              </div> */}
+              </div>
             </div>
           </div>
         </div>

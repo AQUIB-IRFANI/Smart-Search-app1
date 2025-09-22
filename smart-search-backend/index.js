@@ -52,34 +52,6 @@ async function embedText(text) {
   return Array.isArray(result[0]) ? result[0] : result;
 }
 
-
-
-app.get("/item/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-
-    const response = await index.fetch({
-      ids: [id],
-      namespace: process.env.PINECONE_NAMESPACE || undefined,
-    });
-
-    console.log("🔍 Pinecone fetch response:", JSON.stringify(response, null, 2));
-
-    if (!response.vectors || !response.vectors[id]) {
-      return res.status(404).json({ error: "Item not found in Pinecone" });
-    }
-
-    const item = { id, ...response.vectors[id].metadata };
-    res.json(item);
-  } catch (err) {
-    // Log the full error object for more details
-    console.error("❌ Item fetch error:", err);
-    res.status(500).json({ error: "An internal server error occurred" });
-  }
-});
-
-
-
 // --- Webhook endpoint ---
 app.post("/webhook", async (req, res) => {
   try {
@@ -154,6 +126,30 @@ app.post("/webhook", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+app.get("/item/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const response = await index.fetch({
+      ids: [id],
+      namespace: process.env.PINECONE_NAMESPACE || "__default__",
+    });
+
+    console.log("🔍 Pinecone fetch response:", JSON.stringify(response, null, 2));
+
+    if (!response || !response.vectors || !response.vectors[id]) {
+      return res.status(404).json({ error: "Item not found in Pinecone" });
+    }
+
+    const item = { id, ...response.vectors[id].metadata };
+    res.json(item);
+  } catch (err) {
+    console.error("❌ Item fetch error:", err.message || err);
+    res.status(500).json({ error: "An internal server error occurred" });
+  }
+});
+
 
 // --- Search endpoint ---
 app.get("/search", async (req, res) => {

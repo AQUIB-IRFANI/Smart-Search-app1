@@ -164,10 +164,10 @@ app.get("/search", async (req, res) => {
 
     if (type) matches = matches.filter((m) => m.metadata.content_type === type);
 
-    const threshold = minScore ? parseFloat(minScore) : 0.5;
-    matches = matches.filter((m) => m.score >= threshold);
+    // const threshold = minScore ? parseFloat(minScore) : 0.5;
+    // matches = matches.filter((m) => m.score >= threshold);
 
-    console.log("🔍 Matches:", matches.map((m) => ({ id: m.id, score: m.score })));
+    console.log("🔍 Matches:", matches.map((m) => ({ id: m.id })));
     res.json(matches);
   } catch (err) {
     console.error("❌ Search error:", err);

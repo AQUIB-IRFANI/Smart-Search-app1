@@ -33,18 +33,18 @@ Setup Instructions:
 git clone https://github.com/AQUIB-IRFANI/Smart-Search-app1.git
 cd smart-search-app
 
-2. Backend setup:
+3. Backend setup:
 cd backend
 npm install
 
-3. Create .env file:
+5. Create .env file:
 PORT=4000
 HF_API_KEY=HF_KEY
 PINECONE_API_KEY=pcsk_3oH8Pw_4FWb2B5VuYnvRU35ViUzStmwnjBRRgFJAVGLcV84qXiu554XUBXoURJZ1seGohc
 PINECONE_INDEX=smart-search-app
 CONTENTSTACK_API_KEY=blt1da551b8739e8e93
 
-4. Run backend & frontend
+6. Run backend & frontend
 npm start
 npm run dev
 

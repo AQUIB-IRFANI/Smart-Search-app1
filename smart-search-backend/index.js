@@ -156,7 +156,7 @@ app.get("/search", async (req, res) => {
 
     const results = await index.query({
       vector: Array.from(embedding),
-      topK: 5,
+      topK: 3,
       includeMetadata: true,
     });
 
@@ -164,10 +164,10 @@ app.get("/search", async (req, res) => {
 
     if (type) matches = matches.filter((m) => m.metadata.content_type === type);
 
-    // const threshold = minScore ? parseFloat(minScore) : 0.5;
-    // matches = matches.filter((m) => m.score >= threshold);
+    const threshold = minScore ? parseFloat(minScore) : 0.3;
+    matches = matches.filter((m) => m.score >= threshold);
 
-    console.log("🔍 Matches:", matches.map((m) => ({ id: m.id })));
+    console.log("🔍 Matches:", matches.map((m) => ({ id: m.id, score: m.score })));
     res.json(matches);
   } catch (err) {
     console.error("❌ Search error:", err);

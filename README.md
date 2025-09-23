@@ -30,7 +30,7 @@ This Project works as follows:
 
 Setup Instructions:
 1. Clone Repository:
-git clone https://github.com/your-username/smart-search-app.git
+git clone https://github.com/AQUIB-IRFANI/Smart-Search-app1.git
 cd smart-search-app
 
 2. Backend setup:

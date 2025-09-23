@@ -33,9 +33,9 @@ function cleanDate(isoDate) {
 
 // --- Embedding function ---
 async function embedText(text) {
-  const result = await inference.featureExtraction({
-    model: "sentence-transformers/all-MiniLM-L6-v2", // Update model here
-    inputs: text,
+  const result = await inference.textToEmbedding({
+    model: "sentence-transformers/all-MiniLM-L6-v2",
+    input: text,
   });
 
   if (!result) throw new Error("Empty embedding result");

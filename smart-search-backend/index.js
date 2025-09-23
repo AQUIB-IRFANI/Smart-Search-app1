@@ -33,15 +33,24 @@ function cleanDate(isoDate) {
 
 // --- Embedding function ---
 async function embedText(text) {
-  const result = await inference.textToEmbedding({
+  const result = await inference.featureExtraction({
     model: "sentence-transformers/all-MiniLM-L6-v2",
-    input: text,
+    inputs: text,
   });
 
   if (!result) throw new Error("Empty embedding result");
 
-  return Array.isArray(result[0]) ? result[0] : result;
+  // The HF featureExtraction API returns an array of arrays (tokens)
+  // For sentence-transformers, take the **mean of token vectors** to get a single sentence embedding
+  if (Array.isArray(result[0])) {
+    const tokens = result[0];
+    const sum = tokens[0].map((_, i) => tokens.reduce((acc, t) => acc + t[i], 0));
+    return sum.map(v => v / tokens.length);
+  }
+
+  return result;
 }
+
 
 // --- Webhook endpoint ---
 app.post("/webhook", async (req, res) => {
